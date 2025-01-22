@@ -4,83 +4,79 @@ import React, { useState } from 'react';
 
   function Administration() {
     const [showVehicleForm, setShowVehicleForm] = useState(false);
-    const [vehicleDetails, setVehicleDetails] = useState({
-      name: '',
-      registration: '',
-      type: '',
-      station: '',
-      photo: ''
-    });
+    const [showMaterialForm, setShowMaterialForm] = useState(false);
+    const [vehicleType, setVehicleType] = useState('');
     const navigate = useNavigate();
 
-    const handleInputChange = (e) => {
-      const { name, value } = e.target;
-      setVehicleDetails({ ...vehicleDetails, [name]: value });
-    };
-
     const handleAddVehicle = () => {
-      console.log('Adding vehicle:', vehicleDetails);
-      setVehicleDetails({
-        name: '',
-        registration: '',
-        type: '',
-        station: '',
-        photo: ''
-      });
+      console.log('Adding vehicle');
       setShowVehicleForm(false);
     };
 
+    const handleAddMaterial = () => {
+      console.log('Adding material');
+      setShowMaterialForm(false);
+    };
+
+    const getMaterialLocations = () => {
+      if (vehicleType === 'Sanitaire') {
+        return [
+          'Cabine AV', 'coffre lateral gauche', 'coffre lateral droit',
+          'cellule AR gauche', 'cellule centrale gauche', 'Cellule AV gauche',
+          'Tiroir', 'Cellule AV', 'Cellule centrale Droite', 'Cellule AR droite'
+        ];
+      } else if (vehicleType === 'Incendie') {
+        return [
+          'Cabine AV', 'Cabine AR', 'Coffre AV gauche', 'Coffre millieu gauche',
+          'Coffre AR gauche', 'Coffre AV droit', 'Coffre millieu droit',
+          'Coffre AR droit', 'Rideau AR', 'Toit'
+        ];
+      }
+      return [];
+    };
+
     return (
-      <div className="app">
-        <div className="card">
-          <FaTimes className="close-icon" onClick={() => navigate('/')} />
+      <div className="popup">
+        <div className="popup-content">
+          <FaTimes className="close-icon" onClick={() => navigate(-1)} />
           <h2>Administration</h2>
-          <div className="button-group">
-            {!showVehicleForm && <button onClick={() => setShowVehicleForm(true)}>Véhicule</button>}
-            {!showVehicleForm && <button>Matériel</button>}
-          </div>
+          {!showVehicleForm && !showMaterialForm && (
+            <div className="button-group">
+              <button onClick={() => setShowVehicleForm(true)}>Add Vehicle</button>
+              <button onClick={() => setShowMaterialForm(true)}>Add Material</button>
+            </div>
+          )}
           {showVehicleForm && (
             <div className="form-group">
-              <h3>Ajouter Véhicule</h3>
-              <input
-                type="text"
-                name="name"
-                value={vehicleDetails.name}
-                onChange={handleInputChange}
-                placeholder="Nom"
-              />
-              <input
-                type="text"
-                name="registration"
-                value={vehicleDetails.registration}
-                onChange={handleInputChange}
-                placeholder="Immatriculation"
-              />
-              <select
-                name="type"
-                value={vehicleDetails.type}
-                onChange={handleInputChange}
-              >
+              <h3>Add Vehicle</h3>
+              <input type="text" placeholder="Nom" />
+              <input type="text" placeholder="Immatriculation" />
+              <input type="text" placeholder="Caserne" />
+              <select onChange={(e) => setVehicleType(e.target.value)}>
                 <option value="">Type</option>
-                <option value="INCENDIE">INCENDIE</option>
-                <option value="SANITAIRE">SANITAIRE</option>
-                <option value="OPERATIONS DIVERSES">OPERATIONS DIVERSES</option>
+                <option value="Incendie">Incendie</option>
+                <option value="Sanitaire">Sanitaire</option>
+                <option value="Operation Div.">Operation Div.</option>
               </select>
-              <input
-                type="text"
-                name="station"
-                value={vehicleDetails.station}
-                onChange={handleInputChange}
-                placeholder="Caserne"
-              />
-              <input
-                type="text"
-                name="photo"
-                value={vehicleDetails.photo}
-                onChange={handleInputChange}
-                placeholder="Photo URL"
-              />
-              <button onClick={handleAddVehicle}>Ajouter Véhicule</button>
+              <input type="text" placeholder="Photo URL" />
+              <button onClick={handleAddVehicle}>Confirm Add Vehicle</button>
+            </div>
+          )}
+          {showMaterialForm && (
+            <div className="form-group">
+              <h3>Add Material</h3>
+              <input type="text" placeholder="Nom" />
+              <input type="text" placeholder="Quantitee" />
+              <input type="text" placeholder="Vehicule d'affectation" />
+              <select>
+                <option value="">Emplacement</option>
+                {getMaterialLocations().map((location, index) => (
+                  <option key={index} value={location}>{location}</option>
+                ))}
+              </select>
+              <input type="text" placeholder="Lien vers un document ou media" />
+              <input type="text" placeholder="Photo URL" />
+              <button onClick={handleAddMaterial}>Confirm Add Material</button>
             </div>
           )}
         </div>
